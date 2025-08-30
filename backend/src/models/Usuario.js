@@ -15,6 +15,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    rol: {
+      type: DataTypes.ENUM('admin', 'usuario'),
+      allowNull: false,
+      defaultValue: 'usuario', // todos los nuevos usuarios son "usuario" por defecto
+    },
   });
   return Usuario;
 };

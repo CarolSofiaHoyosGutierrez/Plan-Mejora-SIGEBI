@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const sequelize = require('./src/config/database');
+
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +12,10 @@ app.use(express.json());
 const usuarioRoutes = require('./src/routes/usuarioRoutes');
 app.use('/api/usuarios', usuarioRoutes);
 
+const libroRoutes = require('./src/routes/libroRoutes');
+app.use('/api/libros', libroRoutes);
+
+const { sequelize } = require('./src/models');
 
 // Probar conexión a la DB
 sequelize.authenticate()

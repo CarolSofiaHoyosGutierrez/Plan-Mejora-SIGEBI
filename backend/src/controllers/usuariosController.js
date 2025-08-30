@@ -5,7 +5,7 @@ const { Usuario } = require('../models'); // modelo sequelize
 // ✅ Registro de usuario
 exports.register = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { nombre, email, password, rol } = req.body;
 
     // Hashear contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -15,6 +15,7 @@ exports.register = async (req, res) => {
       nombre,
       email,
       password: hashedPassword,
+      rol: rol || 'usuario', // si no envían rol, asigna "usuario"
     });
 
     res.json({ mensaje: 'Usuario creado', usuario: nuevoUsuario });
@@ -51,7 +52,7 @@ exports.login = async (req, res) => {
 
     // Generar token JWT
     const token = jwt.sign(
-      { id: usuario.id, email: usuario.email },
+      { id: usuario.id, email: usuario.email, rol: usuario.rol },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -63,6 +64,7 @@ exports.login = async (req, res) => {
         id: usuario.id,
         nombre: usuario.nombre,
         email: usuario.email,
+        rol: usuario.rol,
       },
     });
   } catch (error) {
@@ -81,3 +83,22 @@ exports.getUsuarios = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener usuarios', error: error.message });
   }
 };
+
+// src/controllers/usuarioController.js
+// ✅ Obtener datos del usuario autenticado
+exports.perfil = async (req, res) => {
+  try {
+    // req.usuario viene del authMiddleware
+    const usuario = await Usuario.findByPk(req.usuario.id, {
+      attributes: ['id', 'nombre', 'email', 'rol', 'createdAt', 'updatedAt']
+    });
+
+    if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    res.json(usuario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al obtener perfil", error: error.message });
+  }
+};
+
