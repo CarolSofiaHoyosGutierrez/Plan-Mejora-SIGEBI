@@ -88,17 +88,20 @@ exports.getUsuarios = async (req, res) => {
 // ✅ Obtener datos del usuario autenticado
 exports.perfil = async (req, res) => {
   try {
-    // req.usuario viene del authMiddleware
-    const usuario = await Usuario.findByPk(req.usuario.id, {
+    // req.usuario viene del authMiddleware (decoded token: id,email,rol)
+    const userId = req.usuario?.id;
+    if (!userId) return res.status(401).json({ mensaje: "Token inválido" });
+
+    const usuario = await Usuario.findByPk(userId, {
       attributes: ['id', 'nombre', 'email', 'rol', 'createdAt', 'updatedAt']
     });
 
-    if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    if (!usuario) return res.status(404).json({ mensaje: 'Usuario no encontrado' });
 
     res.json(usuario);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener perfil", error: error.message });
+    res.status(500).json({ mensaje: 'Error al obtener perfil', error: error.message });
   }
 };
 

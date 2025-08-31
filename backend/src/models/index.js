@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const UsuarioModel = require('./Usuario');
 const LibroModel = require('./Libro');
+const PrestamoModel = require('./Prestamo');
 
 // Configuración con variables de entorno
 const sequelize = new Sequelize(
@@ -16,10 +17,12 @@ const sequelize = new Sequelize(
 // Inicializamos el modelo Usuario
 const Usuario = UsuarioModel(sequelize);
 const Libro = LibroModel(sequelize);
+const Prestamo = PrestamoModel(sequelize);
 
 // Exportamos todo
 module.exports = {
   sequelize,
   Usuario,
   Libro,
+  Prestamo,
 };
